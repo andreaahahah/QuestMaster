@@ -3,9 +3,9 @@ from agenti.narrative_agent import load_lore, process_lore_with_llama
 
 def main():
     lore_path = Path("documents/Lore.txt")
-    lore_text = load_lore(lore_path)
+
     print("🧠 Generazione narrativa in corso...\n")
-    output = process_lore_with_llama(lore_text)
+    output = process_lore_with_llama(lore_path)
     print("📜 Risultato:\n")
     print(output)
 

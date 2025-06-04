@@ -1,7 +1,7 @@
 from pathlib import Path
 import ollama
 
-
+#carica il documento della lore
 def load_lore(filepath: Path ) -> str:
     if not filepath.exists():
         raise FileNotFoundError(f"Lore file not found: {filepath}")
@@ -17,7 +17,8 @@ def ask_llama3(prompt: str) -> str:
     )
     return response['message']['content']
 
-def process_lore_with_llama(lore_text: str) -> str:
+def process_lore_with_llama(lore_path: Path) -> str:
+    lore_text = load_lore(lore_path)
     prompt = (
         "Analizza la seguente descrizione di quest fantasy e genera una lista di azioni chiave "
         "che il protagonista potrebbe intraprendere per completarla. Includi anche una sintesi "
