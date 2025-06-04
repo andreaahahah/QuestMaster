@@ -1,0 +1,2 @@
+#creare un agente che data la storia e degli esempi completi genera i file pddl
+#usare un agente con memoria in modo da evitare di caricare sempre i file e inoltre nella fase successiva quando dovremo validare il pddl lo ricorda.
