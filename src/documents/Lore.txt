@@ -1,0 +1,6 @@
+Arlen è un giovane avventuriero che parte dal villaggio di Liora per recuperare un oggetto magico chiamato Amuleto del Sole.
+Questo artefatto si trova in un antico tempio nascosto. Per arrivarci, Arlen dovrà attraversare una foresta pericolosa e superare un cancello magico che richiede una chiave speciale.
+Lungo il cammino incontrerà ostacoli e potrà trovare oggetti utili per completare la missione.
+
+Branching Factor: minimo 2, massimo 4
+Depth Constraints: minimo 4, massimo 7
