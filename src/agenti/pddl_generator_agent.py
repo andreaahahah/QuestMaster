@@ -29,6 +29,8 @@ def generate_pddl_from_story(story: str, examples: str, guida: str) -> dict:
         
         " ora, basandoti sulla seguente descrizione narrativa, genera un dominio e un problema, commenta bene ogni riga di codice seguendo la sintassi corretta:\n\n"
         f"{story}\n\n"
+        "Hai a disposizione degli esempi di file, usali per capire il come scrivere un codice pddl ma non copiarli, non usare lo stesso nome delle variabili o dei tipi:\n\n"
+        f"{examples}\n\n"
         "Hai a disposizione il riassunto di una missione fantasy. Il tuo compito è generare due file PDDL validi:\n\n"
         "1. Un file `domain.pddl` che definisce:\n"
         "- i tipi di oggetti (usando :typing se necessario),\n"

@@ -5,7 +5,7 @@ from agenti.pddl_generator_agent import generate_pddl_files_from_lore
 def main():
     lore_path = Path("documents/Lore.txt")
     guide_path = Path("documents/guida_pddl")
-    examples_path = Path("documents/esempi")
+    examples_path = Path("documents/esempi_storie")
 
     print("🧠 Generazione narrativa in corso...\n")
     lore_output = process_lore_with_llama(lore_path)
