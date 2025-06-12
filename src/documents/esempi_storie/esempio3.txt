@@ -1,0 +1,106 @@
+;;; ------------------------
+;;; STORY 3: Linka e il tesoro nascosto
+;;; Dominio: Avventura nell'isola
+;;; ------------------------
+
+
+;;;; === STORIA ===
+Linka è una ragazza che parte da un villaggio a nord di una grande isola circondata dal mare e a nord di un vulcano. Lei partirà per andare alla ricerca di un tesoro nascosto , pieno di oggetti di valore, ma per farlo dovrà superare una serie di prove molto difficili, tra cui affrontare mostri e trappole ingegnose, raccogliendo man mano oggetti che le serviranno per ogni mini quest;
+
+;;; === DOMAIN FILE ===
+lispCopiaModifica(define (domain avventura-linka)
+
+  ; Specifica i requisiti del dominio
+  (:requirements :strips :typing :negative-preconditions)
+
+  ; Definizione dei tipi di oggetti nel dominio
+  (:types
+    luogo oggetto creatura - entity
+    personaggio - entity
+    trappola - entity
+  )
+
+  ; Definizione dei predicati usati per descrivere lo stato del mondo
+  (:predicates
+    (in ?p - personaggio ?l - luogo) ; il personaggio ?p si trova nel luogo ?l
+    (collegato ?l1 - luogo ?l2 - luogo) ; i due luoghi sono collegati
+    (possiede ?p - personaggio ?o - oggetto) ; il personaggio possiede l’oggetto
+    (sconfitta ?c - creatura) ; la creatura è stata sconfitta
+    (disattivata ?t - trappola) ; la trappola è stata disattivata
+    (raccolto ?o - oggetto) ; l’oggetto è stato raccolto
+  )
+
+  ; Azione: spostarsi da un luogo a un altro
+  (:action muovi
+    :parameters (?p - personaggio ?da - luogo ?a - luogo)
+    :precondition (and
+      (in ?p ?da)
+      (collegato ?da ?a)
+    )
+    :effect (and
+      (not (in ?p ?da))
+      (in ?p ?a)
+    )
+  )
+
+  ; Azione: raccogliere un oggetto
+  (:action raccogli
+    :parameters (?p - personaggio ?o - oggetto ?l - luogo)
+    :precondition (and
+      (in ?p ?l)
+      (not (raccolto ?o))
+    )
+    :effect (and
+      (possiede ?p ?o)
+      (raccolto ?o)
+    )
+  )
+
+  ; Azione: sconfiggere una creatura
+  (:action combatti
+    :parameters (?p - personaggio ?c - creatura ?l - luogo)
+    :precondition (and
+      (in ?p ?l)
+    )
+    :effect (sconfitta ?c)
+  )
+
+  ; Azione: disattivare una trappola
+  (:action disattiva-trappola
+    :parameters (?p - personaggio ?t - trappola ?l - luogo)
+    :precondition (and
+      (in ?p ?l)
+    )
+    :effect (disattivata ?t)
+  )
+)
+
+;;; === PROBLEM FILE ===
+lispCopiaModifica(define (problem linka-avventura-tesoro)
+  (:domain avventura-linka)
+
+  ; Definizione degli oggetti concreti presenti nell’avventura
+  (:objects
+    linka - personaggio
+    villaggio nord-isola vulcano caverna-tempio stanza-segreta - luogo
+    spada chiave mappa tesoro - oggetto
+    drago - creatura
+    trappola-spine - trappola
+  )
+
+  ; Stato iniziale del mondo
+  (:init
+    (in linka villaggio)
+    (collegato villaggio nord-isola)
+    (collegato nord-isola vulcano)
+    (collegato vulcano caverna-tempio)
+    (collegato caverna-tempio stanza-segreta)
+  )
+
+  ; Obiettivo finale dell'avventura
+  (:goal (and
+    (possiede linka tesoro)
+    (sconfitta drago)
+    (disattivata trappola-spine)
+  ))
+)

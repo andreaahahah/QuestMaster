@@ -3,6 +3,10 @@
 ;;; Dominio: Avventura nella Foresta
 ;;; ------------------------
 
+;;; === STORIA ===
+Lidia è una giovane ragazza che parte da una piccola cittadina per intraprendere una grande avventura per raccogliere una bacchetta dai poteri mistici, che la farebbe diventare la regina del villaggio;ma per farlo,dovrà raggiungere l'ubicazione della bacchetta posta su un tempio antico in una altissima montagna,dove per arrivarci dovrà attraversare una grandissima foresta piena di ostacoli e di pericoli;anche lidia può raccogliere oggetti che le serviranno per andare avanti;
+
+
 ;;; === DOMAIN FILE ===
 (define (domain lidia-quest)
   (:requirements :strips :typing)

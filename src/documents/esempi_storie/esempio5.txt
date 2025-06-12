@@ -1,0 +1,129 @@
+STORIA
+
+Titolo: La Spada di Ghiaccio
+
+Elian è un giovane avventuriero del villaggio di Nordwyn. La sua missione è recuperare la leggendaria Spada di Ghiaccio custodita nella Cripta del Nord. Per raggiungerla, Elian deve superare diversi ostacoli e compiere azioni specifiche:
+
+- Deve attraversare la Foresta Innevata, bloccata da rami ghiacciati.
+- Deve trovare un accetta per tagliare i rami.
+- Dopo la foresta, incontrerà un fiume ghiacciato che può attraversare solo costruendo una zattera.
+- Per costruire la zattera, Elian deve raccogliere legno e corda.
+- Dopo il fiume, un cancello magico blocca l’ingresso alla cripta.
+- Per aprire il cancello, Elian deve recuperare una chiave magica custodita in una grotta vicina, protetta da un lupo.
+- Elian può scegliere di affrontare il lupo o di distrarlo con del cibo trovato nella foresta.
+- Dopo aver aperto il cancello, Elian deve risolvere un enigma per ottenere la Spada di Ghiaccio.
+
+Solo completando tutte queste azioni specifiche, Elian potrà avere successo nella sua missione.
+
+---
+
+DOMAIN.PDDL
+
+(define (domain elian-quest)
+  (:requirements :strips :typing)
+
+  (:types
+    luogo oggetto personaggio creatura
+  )
+
+  (:predicates
+    (in ?p - personaggio ?l - luogo)
+    (collezionato ?p - personaggio ?o - oggetto)
+    (accessibile ?from - luogo ?to - luogo)
+    (bloccato ?l - luogo)
+    (usa ?o - oggetto ?l - luogo)
+    (presente ?o - oggetto ?l - luogo)
+    (presente-creatura ?c - creatura ?l - luogo)
+    (sconfitto ?c - creatura)
+    (enigmi-risolti ?l - luogo)
+  )
+
+  (:action esplora
+    :parameters (?p - personaggio ?from - luogo ?to - luogo)
+    :precondition (and (in ?p ?from) (accessibile ?from ?to) (not (bloccato ?to)))
+    :effect (and (not (in ?p ?from)) (in ?p ?to))
+  )
+
+  (:action raccogli
+    :parameters (?p - personaggio ?o - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (presente ?o ?l))
+    :effect (collezionato ?p ?o)
+  )
+
+  (:action usa-oggetto
+    :parameters (?p - personaggio ?o - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (collezionato ?p ?o) (usa ?o ?l))
+    :effect (not (bloccato ?l))
+  )
+
+  (:action costruisci-zattera
+    :parameters (?p - personaggio ?o1 - oggetto ?o2 - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (collezionato ?p ?o1) (collezionato ?p ?o2))
+    :effect (not (bloccato ?l))
+  )
+
+  (:action affronta-creatura
+    :parameters (?p - personaggio ?c - creatura ?l - luogo)
+    :precondition (and (in ?p ?l) (presente-creatura ?c ?l))
+    :effect (sconfitto ?c)
+  )
+
+  (:action distrai-creatura
+    :parameters (?p - personaggio ?c - creatura ?o - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (presente-creatura ?c ?l) (collezionato ?p ?o))
+    :effect (sconfitto ?c)
+  )
+
+  (:action risolvi-enigma
+    :parameters (?p - personaggio ?l - luogo)
+    :precondition (in ?p ?l)
+    :effect (enigmi-risolti ?l)
+  )
+)
+
+---
+
+PROBLEM.PDDL
+
+(define (problem elian-problema)
+  (:domain elian-quest)
+
+  (:objects
+    elian - personaggio
+    villaggio foresta fiume grotta cancello cripta - luogo
+    accetta legno corda cibo chiave-magica spada-di-ghiaccio - oggetto
+    lupo - creatura
+  )
+
+  (:init
+    (in elian villaggio)
+    (accessibile villaggio foresta)
+    (accessibile foresta fiume)
+    (accessibile fiume grotta)
+    (accessibile grotta cancello)
+    (accessibile cancello cripta)
+
+    (bloccato foresta)
+    (bloccato fiume)
+    (bloccato cancello)
+
+    (usa accetta foresta)
+
+    (presente accetta villaggio)
+    (presente legno foresta)
+    (presente corda foresta)
+    (presente cibo foresta)
+    (presente chiave-magica grotta)
+    (presente spada-di-ghiaccio cripta)
+
+    (presente-creatura lupo grotta)
+  )
+
+  (:goal
+    (and
+      (in elian cripta)
+      (collezionato elian spada-di-ghiaccio)
+    )
+  )
+)
+

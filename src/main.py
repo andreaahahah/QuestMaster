@@ -1,11 +1,21 @@
 from pathlib import Path
 from agenti.narrative_agent import load_lore, process_lore_with_llama
 from agenti.pddl_generator_agent import generate_pddl_files_from_lore
+from agenti.validator_agent import validate_pddl
+
+def save_pddl_files(domain_str, problem_str, domain_path, problem_path):
+    with open(domain_path, 'w') as f:
+        f.write(domain_str)
+    with open(problem_path, 'w') as f:
+        f.write(problem_str)
 
 def main():
     lore_path = Path("documents/Lore.txt")
     guide_path = Path("documents/guida_pddl")
     examples_path = Path("documents/esempi_storie")
+
+    domain_path=Path("documents/output/domain.pddl")
+    problem_path=Path("documents/output/problem.pddl")
 
     print("🧠 Generazione narrativa in corso...\n")
     lore_output = process_lore_with_llama(lore_path)
@@ -19,6 +29,12 @@ def main():
     print(pddl_files["domain"])
     print("\n📂 PROBLEM.PDDL:\n")
     print(pddl_files["problem"])
+
+    #creo file
+    save_pddl_files(pddl_files["domain"],pddl_files["problem"],domain_path,problem_path)
+
+    #chiamo il validatore con i file
+    validate_pddl()
 
 if __name__ == "__main__":
     main()

@@ -26,11 +26,13 @@ def generate_pddl_from_story(story: str, examples: str, guida: str) -> dict:
         "partendo dalla seguente descrizione narrativa. I file devono essere validi e seguire la sintassi PDDL.\n\n"
         "Per le regole di pddl attieniti ed impara da questo testo in modo da non commetter errori"
         f"{guida}\n\n"
-        
-        " ora, basandoti sulla seguente descrizione narrativa, genera un dominio e un problema, commenta bene ogni riga di codice seguendo la sintassi corretta:\n\n"
-        f"{story}\n\n"
-        "Hai a disposizione degli esempi di file, usali per capire il come scrivere un codice pddl ma non copiarli, non usare lo stesso nome delle variabili o dei tipi:\n\n"
+        "Hai a disposizione degli esempi di file: ognuno di questi file è composto da prima la storia narrativa, subito dopo sono presenti il domain.pddl e il problem.pddl derivati da quella storia:"
+        "analizza la struttura di questi esempi e usali per capire il come scrivere un codice pddl ma non copiarli, non usare lo stesso nome delle variabili o dei tipi:\n\n"
         f"{examples}\n\n"
+        
+        "Ora, basandoti sulla seguente descrizione narrativa, genera un dominio e un problema, commenta bene ogni riga di codice seguendo la sintassi corretta:\n\n"
+        f"{story}\n\n"
+        
         "Hai a disposizione il riassunto di una missione fantasy. Il tuo compito è generare due file PDDL validi:\n\n"
         "1. Un file `domain.pddl` che definisce:\n"
         "- i tipi di oggetti (usando :typing se necessario),\n"
@@ -53,11 +55,11 @@ def generate_pddl_from_story(story: str, examples: str, guida: str) -> dict:
     content = response["message"]["content"]
 
     # Estrai i due blocchi separati
-    domain_start = content.find("[DOMAIN]")
-    problem_start = content.find("[PROBLEM]")
+    domain_start = content.find("**DOMAIN**")
+    problem_start = content.find("**PROBLEM**")
 
-    domain = content[domain_start + len("[DOMAIN]"):problem_start].strip()
-    problem = content[problem_start + len("[PROBLEM]"):]
+    domain = content[domain_start + len("**DOMAIN**"):problem_start].strip()
+    problem = content[problem_start + len("**PROBLEM**"):].strip()
 
     return {"domain": domain, "problem": problem}
 

@@ -1,0 +1,88 @@
+;;; ------------------------
+;;; STORY 4: Ioro e l'avventura in città
+;;; Dominio: Avventura nella foresta e in città
+;;; ------------------------
+
+
+;;;; === STORIA ===
+
+Ioro è un ragazzo appartenente alla tribù degli ubba, una tribù immersa nella foresta selvaggia,piena di animali feroci e pericoli di ogni genere; ubba è il primo ragazzo ad aver il desiderio di uscire dalla foresta per andare in città,dalla civiltà,ma per farlo dovrà affrontare tutti i pericoli che la foresta offre, avendo solo a disposizione un bastone di legno, che potrà poi sostituire con altri oggetti che troverà nella foresta.
+
+;;; === DOMAIN FILE ===
+lispCopiaModifica(define (domain fuga-dalla-foresta)
+
+  (:requirements :strips :typing :negative-preconditions)
+
+  (:types
+    persona - entity
+    foresta città luogo - entity
+    oggetto - entity
+    animale - entity
+  )
+
+  (:predicates
+    (in ?p - persona ?l - luogo) ; la persona ?p è nel luogo ?l
+    (collegato ?l1 - luogo ?l2 - luogo) ; luoghi adiacenti
+    (possiede ?p - persona ?o - oggetto) ; la persona ha l'oggetto
+    (sconfitto ?a - animale) ; l'animale è stato sconfitto
+    (oggetto-raccolto ?o - oggetto) ; stato di oggetto raccolto
+  )
+
+  (:action muovi
+    :parameters (?p - persona ?da - luogo ?a - luogo)
+    :precondition (and
+      (in ?p ?da)
+      (collegato ?da ?a)
+    )
+    :effect (and
+      (not (in ?p ?da))
+      (in ?p ?a)
+    )
+  )
+
+  (:action raccogli
+    :parameters (?p - persona ?o - oggetto ?l - luogo)
+    :precondition (and
+      (in ?p ?l)
+      (not (oggetto-raccolto ?o))
+    )
+    :effect (and
+      (possiede ?p ?o)
+      (oggetto-raccolto ?o)
+    )
+  )
+
+  (:action combatti
+    :parameters (?p - persona ?a - animale ?l - luogo)
+    :precondition (and
+      (in ?p ?l)
+    )
+    :effect (sconfitto ?a)
+  )
+)
+
+;;; === PROBLEM FILE ===
+lispCopiaModifica(define (problem ioro-fuga)
+  (:domain fuga-dalla-foresta)
+
+  (:objects
+    ioro - persona
+    capanna radura fiume sentiero ingresso-città - luogo
+    bastone coltello zaino - oggetto
+    tigre - animale
+  )
+
+  (:init
+    (in ioro capanna)
+    (collegato capanna radura)
+    (collegato radura fiume)
+    (collegato fiume sentiero)
+    (collegato sentiero ingresso-città)
+  )
+
+  (:goal (and
+    (in ioro ingresso-città)
+    (sconfitto tigre)
+    (possiede ioro zaino)
+  ))
+)

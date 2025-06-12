@@ -2,6 +2,11 @@
 ;;; STORY 1: Simeon e l'Acqua Magica
 ;;; Dominio: Avventura nel Deserto
 ;;; ------------------------
+;;; === STORIA ===
+
+"Simeon è un giovane che parte da un piccolo borgo per recuperare la cosidetta "Acqua magica",che risolverebbe i problemi di siccità del villaggio.Questa acqua si trova in una sorgente in un luogo remoto e nascosto.Per arrivare sul posto,simeon dovrà attraversare il deserto,una strada pericolosa piena di animali feroci ed altri ostacoli lungo il cammino;durante la quest potrà collezionare oggetti che gli serviranno per andare avanti.Branching Factor: minimo 2, massimo 4
+Depth Constraints: minimo 4, massimo 7";
+
 
 ;;; === DOMAIN FILE ===
 (define (domain simeon-quest)
