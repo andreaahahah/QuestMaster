@@ -1,39 +1,45 @@
-(define (domain simeon-quest)
+(define (domain arlen-quest)
   (:requirements :strips :typing)
 
-  ;; Definizione dei tipi di oggetti nel mondo
   (:types
     luogo oggetto personaggio
   )
 
-  ;; Predicati che rappresentano lo stato del mondo
   (:predicates
     (in ?p - personaggio ?l - luogo) ;; Il personaggio si trova in un certo luogo
     (collezionato ?p - personaggio ?o - oggetto) ;; Il personaggio ha raccolto un oggetto
-    (accessibile ?from - luogo ?to - luogo) ;; Ãˆ possibile spostarsi da un luogo a un altro
+    (accessibile ?from - luogo ?to - luogo) ;; È possibile spostarsi da un luogo a un altro
     (bloccato ?l - luogo) ;; Il luogo ha un ostacolo che impedisce l'accesso
-    (sconfitto ?ostacolo - oggetto) ;; L'ostacolo Ã¨ stato superato (es. animale pericoloso)
-    (usa ?o - oggetto ?l - luogo) ;; Un oggetto puÃ² essere usato per superare un luogo
+    (usa ?o - oggetto ?l - luogo) ;; Un oggetto può essere usato per superare un luogo
   )
 
-  ;; Azione per muoversi tra luoghi
-  (:action muovi
+  (:action esplora
     :parameters (?p - personaggio ?from - luogo ?to - luogo)
     :precondition (and (in ?p ?from) (accessibile ?from ?to) (not (bloccato ?to)))
     :effect (and (not (in ?p ?from)) (in ?p ?to))
   )
 
-  ;; Azione per raccogliere un oggetto
-  (:action raccogli
-    :parameters (?p - personaggio ?o - oggetto ?l - luogo)
-    :precondition (and (in ?p ?l))
-    :effect (collezionato ?p ?o)
-  )
-
-  ;; Azione per usare un oggetto per superare un ostacolo
-  (:action usa-ogg
+  (:action trova-chiave
     :parameters (?p - personaggio ?o - oggetto ?l - luogo)
     :precondition (and (in ?p ?l) (collezionato ?p ?o) (usa ?o ?l))
+    :effect (not (bloccato ?l))
+  )
+
+  (:action sconfiggi-mostro
+    :parameters (?p - personaggio ?m - oggetto)
+    :precondition (and (in ?p ?l) (collezionato ?p ?m))
+    :effect (sconfitto ?m)
+  )
+
+  (:action risolve-enigma
+    :parameters (?p - personaggio ?e - oggetto)
+    :precondition (and (in ?p ?l) (collezionato ?p ?e))
+    :effect (not (bloccato ?l))
+  )
+
+  (:action sconfiggi-guardiano
+    :parameters (?p - personaggio ?g - oggetto)
+    :precondition (and (in ?p ?l) (collezionato ?p ?g))
     :effect (not (bloccato ?l))
   )
 )
