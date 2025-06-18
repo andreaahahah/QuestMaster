@@ -1,31 +1,29 @@
+import re
 from pathlib import Path
-from langchain_core.prompts import ChatPromptTemplate
+
 from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+from src.agenti.pddl_generator_agent import load_pddl_examples
+
+# Path alle cartelle
+file_path = Path("documents/output")
+esempi_path = Path("documents/esempi_storie")
+guida_path = Path("documents/guida_pddl")
 
 
-file_path = Path ("documents/output")
-
-# Funzione per caricare gli esempi PDDL da una cartella
-def load_pddl_examples(folder: Path) -> str:
+# Funzione per caricare tutti i file da una cartella
+def load_pddl_folder(folder: Path) -> str:
     if not folder.exists() or not folder.is_dir():
-        raise FileNotFoundError(f"Esempi PDDL non trovati nella cartella: {folder}")
+        raise FileNotFoundError(f"Cartella non trovata: {folder}")
 
-    examples_text = ""
+    content = ""
     for file in sorted(folder.glob("*.pddl")):
         with open(file, "r", encoding="utf-8", errors="ignore") as f:
-            examples_text += f"\n\n;; ESEMPIO: {file.name}\n"
-            examples_text += f.read()
-    return examples_text.strip()
+            content += f"\n\n;; FILE: {file.name}\n"
+            content += f.read()
+    return content.strip()
 
-# Funzione per caricare la guida PDDL
-def load_pddl_guide(guide_path: Path) -> str:
-    if not guide_path.exists():
-        raise FileNotFoundError(f"Guida PDDL non trovata: {guide_path}")
-
-    with open(guide_path, "r", encoding="utf-8", errors="ignore") as f:
-        return f.read().strip()
-
-file = load_pddl_examples(file_path)
 
 # Configurazione LLM
 llm = ChatOllama(
@@ -33,31 +31,32 @@ llm = ChatOllama(
     temperature=0.7,
 )
 
-# Prompt iniziale
-system_message = (
-    "Sei un esperto di PDDL. Analizza il seguente file PDDL"
-    f"{file}" 
-    "individua i problemi e suggerisci le modifiche appropriate. "
-    "Usa come riferimento gli esempi forniti e la guida PDDL. Interagisci con l'utente e suggerisci le modifiche chiedendo "
-    "la sua approvazione o maggiori informazioni o input prima di finalizzare tutte le modifiche."
-)
 
-# Funzione di chat interattiva
-def refine_pddl_chat(errore: str, esempi_path: Path, guida_path: Path):
+def refine_pddl_chat(errore: str):
+    esempi = load_pddl_folder(esempi_path)
+    guida = load_pddl_folder(guida_path)
+    file_content = load_pddl_folder(file_path)
 
-    esempi = load_pddl_examples(esempi_path)
-    guida = load_pddl_guide(guida_path)
+    # Creo il system_message dinamico
+    system_message = (
+        "Sei un esperto di PDDL. Analizza i seguenti file PDDL:\n"
+        f"{file_content}\n\n"
+        "Individua i problemi e suggerisci le modifiche appropriate. "
+        "Usa come riferimento gli esempi forniti e la guida PDDL. "
+        "Interagisci con l'utente e suggerisci le modifiche chiedendo la sua approvazione, SENZA AGGIUNGERE COMMENTI "
+        "o maggiori informazioni o input prima di finalizzare tutte le modifiche."
+        "se ti viene detto di applicare le modifiche tu lo fai e NON AGGIUNGI COMMENTI"
+    )
 
-    # Inizializzo il contesto della chat
+    # Messaggi strutturati
     history = [
-        {"role": "system", "content": system_message},
-        {"role": "user", "content": f"Errore dei file:\n{errore}\n\nEsempi di pddl corretti su cui basarsi:\n{esempi}\n\nGuida sintassi pddl:\n{guida}File pddl da revisionare:\n{file}\n\n"}
+        SystemMessage(content=system_message),
+        HumanMessage(
+            content=f"Errore dei file:\n{errore}\n\nEsempi di PDDL corretti su cui basarsi:\n{esempi}\n\nGuida sintassi PDDL:\n{guida}\n\nFile PDDL da revisionare:\n{file_content}\n non aggiungere commenti\n")
     ]
 
     while True:
-        # Invio la cronologia al modello
         response = llm.invoke(history)
-
         print(f"\n🦙 Llama3: {response.content}\n")
 
         user_input = input("💬 Tu: ")
@@ -66,6 +65,27 @@ def refine_pddl_chat(errore: str, esempi_path: Path, guida_path: Path):
             print("👋 Chat terminata.")
             break
 
-        # Aggiungo la risposta dell'utente alla cronologia
-        history.append({"role": "assistant", "content": response.content})
-        history.append({"role": "user", "content": user_input})
+        if user_input.lower() in ["applica modifiche"]:
+
+
+            domain_start = response.content.find("(define (domain")
+            problem_start = response.content.find("(define (problem")
+
+            domain_da_salvare = response.content[domain_start :problem_start].strip()
+            problem_da_salvare = response.content[problem_start :].strip()
+
+            output_folder = Path("documents/corretti")
+            output_folder.mkdir(parents=True, exist_ok=True)
+
+            # Salvataggio dei file separati
+            domain_file_path = output_folder / "domain_corretto.pddl"
+            problem_file_path = output_folder / "problem_corretto.pddl"
+
+            domain_file_path.write_text(domain_da_salvare, encoding="utf-8")
+            problem_file_path.write_text(problem_da_salvare, encoding="utf-8")
+            break
+
+
+
+        history.append(AIMessage(content=response.content))
+        history.append(HumanMessage(content=user_input))

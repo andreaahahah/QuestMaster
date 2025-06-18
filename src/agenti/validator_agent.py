@@ -3,11 +3,9 @@ from pathlib import Path
 
 from src.agenti import reflection_agent
 
-file_path = Path ("documents/output")
-esempi_path = Path ("documents/esempi_storie")
-guida_path = Path("documents/guida_pddl/guida_pddl.txt")
 
-def validate_pddl():
+
+def validate_pddl(primavolta,domain_file,problem_file):
     # Path già in formato WSL
     domain_file = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/output/domain.pddl"
     problem_file = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/output/problem.pddl"
@@ -38,7 +36,10 @@ def validate_pddl():
             return True
         else:
             print("❌ Valid syntax but problem not solvable.")
-            reflection_agent.refine_pddl_chat(result.stderr,esempi_path,guida_path)
+            if primavolta:
+                reflection_agent.refine_pddl_chat(result.stderr)
+            else:
+                print("COMUNICA CON L'UTENTE PER RISOLVERE I PROBLEMI")
             return False
     except Exception as e:
         print(f"Error: {e}")
