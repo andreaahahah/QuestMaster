@@ -36,12 +36,12 @@ def main():
         # ✅ Chiamo la validazione solo dopo aver completato tutto
         domain_file = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/output/domain.pddl"
         problem_file = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/output/problem.pddl"
-        validate_pddl(True,domain_file,problem_file)
+        validate_pddl(0,domain_file,problem_file)
         domain_file_corretto = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/corretti/domain_corretto.pddl"
         problem_file_corretto = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/corretti/problem_corretto.pddl"
-        validate_pddl(False,domain_file_corretto,problem_file_corretto)
+        validate_pddl(1,domain_file_corretto,problem_file_corretto)
 
-        #TODO man in the loop se il file continua a non essere validato
+
     except Exception as e:
         print(f"Errore durante l'esecuzione: {e}")
 

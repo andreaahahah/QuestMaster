@@ -1,7 +1,6 @@
 e file PDDL generati:
 
-**[DOMAIN]**
-
+[DOMAIN]
 (define (domain arlen-quest)
   (:requirements :strips :typing)
 
@@ -34,40 +33,35 @@ e file PDDL generati:
     :precondition (and (in ?p ?l) (collezionato ?p ?o) (usa ?o ?l))
     :effect (not (bloccato ?l))
   )
-
-  (:action supera-cancello
-    :parameters (?p - personaggio ?c - luogo)
-    :precondition (and (in ?p ?c) (has-key ?p))
-    :effect (not (bloccato ?c))
-  )
 )
 
-**[PROBLEM]**
-
+[PROBLEM]
 (define (problem arlen-problema)
   (:domain arlen-quest)
 
   (:objects
     arlen - personaggio
-    liora foresta montagna tempio - luogo
-    machete corda amuleto-solare - oggetto
+    liora foresta tempio - luogo
+    chiave- speciale amuleto-del-sole - oggetto
+    machete corda - oggetto
   )
 
   (:init
     (in arlen liora)
     (accessibile liora foresta)
-    (accessible foresta montagna)
-    (accessible montagna tempio)
-    (bloccato foresta)
-    (has-key false)
+    (accessibile foresta tempio)
+    (bloccato foresta) ;; pericolo nella foresta
+    (bloccato tempio) ;; cancello magico richiede chiave speciale
+    (usa machete foresta) ;; il machete serve per superare la foresta
+    (usa corda tempio) ;; la corda serve per superare il cancello magico
   )
 
   (:goal
     (and
       (in arlen tempio)
-      (collezionato arlen amuleto-solare)
+      (collezionato arlen amuleto-del-sole)
     )
   )
 )
 
-Nota: Ho definito un'azione `supera-cancello` per rappresentare l'azione di superare il cancello magico, che richiede la chiave speciale. Il problema è stato configurato in modo da avere lo stato iniziale e lo stato obiettivo specificati
+Nota che ho seguito le regole di sintassi PDDL e ho definito i tipi di oggetti, i predicati logici rilevanti e le azioni STRIPS che il protagonista può intraprendere. Inoltre, ho definito gli oggetti specifici della missione, lo stato iniziale e lo stato obiettivo
