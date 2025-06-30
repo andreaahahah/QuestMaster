@@ -1,0 +1,72 @@
+Here is the complete and valid HTML file with JavaScript:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Arlen's Quest</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+		
+		.choices {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.choice {
+			background-color: #f7f7f7;
+			padding: 10px;
+			border-bottom: 1px solid #ccc;
+			margin-bottom: 20px;
+			cursor: pointer;
+		}
+		
+		.choice:hover {
+			background-color: #ccc;
+		}
+	</style>
+</head>
+<body>
+	<h1>Arlen's Quest</h1>
+	<p id="story"></p>
+	<ul class="choices" id="choices"></ul>
+	
+	<script>
+		let storyText = "Arlen è un giovane avventuriero che parte dal villaggio di Liora per recuperare un oggetto magico chiamato Amuleto del Sole. Questo artefatto si trova in un antico tempio nascosto.";
+		let choices = ["Vai a nord", "Apri la porta"];
+		let choiceHandler = async (choice) => {
+			const response = await fetch('http://localhost:8000/next', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ current_text: storyText, choice }),
+			});
+			const result = await response.json();
+			storyText = result.paragraph;
+			choices = result.choices;
+			updateStoryAndChoices();
+		};
+		
+		let updateStoryAndChoices = () => {
+			document.getElementById('story').innerHTML = storyText;
+			document.getElementById('choices').innerHTML = '';
+			for (const choice of choices) {
+				const li = document.createElement('li');
+				li.className = 'choice';
+				li.textContent = choice;
+				li.addEventListener('click', () => choiceHandler(choice));
+				document.getElementById('choices').appendChild(li);
+			}
+		};
+		
+		updateStoryAndChoices();
+	</script>
+</body>
+</html>
+```
+

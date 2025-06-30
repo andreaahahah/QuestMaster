@@ -81,4 +81,4 @@ def apri_editor():
 
 #per testare, decommanta sotto e metti i pddl da testare
 #if __name__ == "__main__":
- #   apri_editor()
+#    apri_editor()

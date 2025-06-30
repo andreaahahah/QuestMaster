@@ -2,6 +2,7 @@ from pathlib import Path
 from agenti.narrative_agent import load_lore, process_lore_with_llama
 from agenti.pddl_generator_agent import generate_pddl_files_from_lore
 from agenti.validator_agent import validate_pddl
+from agenti.web_agent import genera_frontend_con_ollama
 
 def save_pddl_files(domain_str, problem_str, domain_path, problem_path):
     with open(domain_path, 'w') as f:
@@ -41,6 +42,17 @@ def main():
         problem_file_corretto = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/corretti/problem_corretto.pddl"
         validate_pddl(1,domain_file_corretto,problem_file_corretto)
 
+        #fase2
+
+        #llm che si prende la storia e i constraint e genera il grafo in json
+        #il json viene mandato all'llm che genra il frontend e siamo tutti felici
+        frontend_output_path = Path("frontend/index.html")
+        genera_frontend_con_ollama(
+            lore_path,
+            domain_path,
+            problem_path,
+            frontend_output_path
+        )
 
     except Exception as e:
         print(f"Errore durante l'esecuzione: {e}")

@@ -1,6 +1,3 @@
-e file PDDL generati:
-
-[DOMAIN]
 (define (domain arlen-quest)
   (:requirements :strips :typing)
 
@@ -33,35 +30,10 @@ e file PDDL generati:
     :precondition (and (in ?p ?l) (collezionato ?p ?o) (usa ?o ?l))
     :effect (not (bloccato ?l))
   )
-)
 
-[PROBLEM]
-(define (problem arlen-problema)
-  (:domain arlen-quest)
-
-  (:objects
-    arlen - personaggio
-    liora foresta tempio - luogo
-    chiave- speciale amuleto-del-sole - oggetto
-    machete corda - oggetto
-  )
-
-  (:init
-    (in arlen liora)
-    (accessibile liora foresta)
-    (accessibile foresta tempio)
-    (bloccato foresta) ;; pericolo nella foresta
-    (bloccato tempio) ;; cancello magico richiede chiave speciale
-    (usa machete foresta) ;; il machete serve per superare la foresta
-    (usa corda tempio) ;; la corda serve per superare il cancello magico
-  )
-
-  (:goal
-    (and
-      (in arlen tempio)
-      (collezionato arlen amuleto-del-sole)
-    )
+  (:action sconfiggi
+    :parameters (?p - personaggio ?c - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (usa ?c ?l))
+    :effect (not (bloccato ?l))
   )
 )
-
-Nota che ho seguito le regole di sintassi PDDL e ho definito i tipi di oggetti, i predicati logici rilevanti e le azioni STRIPS che il protagonista può intraprendere. Inoltre, ho definito gli oggetti specifici della missione, lo stato iniziale e lo stato obiettivo
