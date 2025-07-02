@@ -2,5 +2,8 @@ Arlen è un giovane avventuriero che parte dal villaggio di Liora per recuperare
 Questo artefatto si trova in un antico tempio nascosto. Per arrivarci, Arlen dovrà attraversare una foresta pericolosa e superare un cancello magico che richiede una chiave speciale.
 Lungo il cammino incontrerà ostacoli e potrà trovare oggetti utili per completare la missione.
 
-Branching Factor: minimo 2, massimo 4
-Depth Constraints: minimo 4, massimo 7
+depth_min: 4
+depth_max: 6
+
+branching_min: 3
+branching_max: 6

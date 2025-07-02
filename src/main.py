@@ -3,6 +3,7 @@ from agenti.narrative_agent import load_lore, process_lore_with_llama
 from agenti.pddl_generator_agent import generate_pddl_files_from_lore
 from agenti.validator_agent import validate_pddl
 from agenti.web_agent import genera_frontend_con_ollama
+from agenti.json_generator_agent import json_generator
 
 def save_pddl_files(domain_str, problem_str, domain_path, problem_path):
     with open(domain_path, 'w') as f:
@@ -45,6 +46,8 @@ def main():
         #fase2
 
         #llm che si prende la storia e i constraint e genera il grafo in json
+        json_generator(lore_outputlore_path)
+
         #il json viene mandato all'llm che genra il frontend e siamo tutti felici
         frontend_output_path = Path("frontend/index.html")
         genera_frontend_con_ollama(
