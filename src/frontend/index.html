@@ -1,72 +1,170 @@
-Here is the complete and valid HTML file with JavaScript:
-
-```html
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-	<title>Arlen's Quest</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-		}
-		
-		.choices {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-		}
-		
-		.choice {
-			background-color: #f7f7f7;
-			padding: 10px;
-			border-bottom: 1px solid #ccc;
-			margin-bottom: 20px;
-			cursor: pointer;
-		}
-		
-		.choice:hover {
-			background-color: #ccc;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storia Interattiva</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
+        #game-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #story-text { font-size: 18px; line-height: 1.6; margin-bottom: 25px; color: #333; }
+        #choices-container { display: flex; flex-direction: column; gap: 10px; }
+        .choice-button { background: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .choice-button:hover { background: #0056b3; }
+        #game-over { text-align: center; font-size: 20px; color: #28a745; margin-top: 20px; }
+    </style>
 </head>
 <body>
-	<h1>Arlen's Quest</h1>
-	<p id="story"></p>
-	<ul class="choices" id="choices"></ul>
-	
-	<script>
-		let storyText = "Arlen è un giovane avventuriero che parte dal villaggio di Liora per recuperare un oggetto magico chiamato Amuleto del Sole. Questo artefatto si trova in un antico tempio nascosto.";
-		let choices = ["Vai a nord", "Apri la porta"];
-		let choiceHandler = async (choice) => {
-			const response = await fetch('http://localhost:8000/next', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ current_text: storyText, choice }),
-			});
-			const result = await response.json();
-			storyText = result.paragraph;
-			choices = result.choices;
-			updateStoryAndChoices();
-		};
-		
-		let updateStoryAndChoices = () => {
-			document.getElementById('story').innerHTML = storyText;
-			document.getElementById('choices').innerHTML = '';
-			for (const choice of choices) {
-				const li = document.createElement('li');
-				li.className = 'choice';
-				li.textContent = choice;
-				li.addEventListener('click', () => choiceHandler(choice));
-				document.getElementById('choices').appendChild(li);
-			}
-		};
-		
-		updateStoryAndChoices();
-	</script>
+    <div id="game-container">
+        <div id="story-text"></div>
+        <div id="choices-container"></div>
+        <div id="game-over" style="display: none;">Fine dell'avventura!</div>
+    </div>
+    <script>
+        const storyData = {
+            "inizio": {
+                "testo": "Inizia la tua avventura a Liora. Il tuo obiettivo è recuperare l'Amuleto del Sole dall'antico tempio nascosto.",
+                "scelte": [
+                    {
+                        "testo": "Esplorare la foresta",
+                        "next": "nodo_1"
+                    },
+                    {
+                        "testo": "Raccogliere informazioni sul cancello magico",
+                        "next": "nodo_2"
+                    }
+                ]
+            },
+            "nodo_1": {
+                "testo": "Ti incammini verso nord, attraversando la foresta. La strada è lunga e pericolosa.",
+                "scelte": [
+                    {
+                        "testo": "Continua a camminare",
+                        "next": "nodo_3"
+                    },
+                    {
+                        "testo": "Torna indietro",
+                        "next": "inizio"
+                    }
+                ]
+            },
+            "nodo_2": {
+                "testo": "Il vecchio della foresta ti dà alcune informazioni sul cancello magico. Sei sulla strada giusta?",
+                "scelte": [
+                    {
+                        "testo": "Trovare la chiave speciale",
+                        "next": "nodo_4"
+                    },
+                    {
+                        "testo": "Ritorna al villaggio",
+                        "next": "inizio"
+                    }
+                ]
+            },
+            "nodo_3": {
+                "testo": "Ti trovi nella foresta. La strada è lunga e pericolosa. Devi decidere cosa fare.",
+                "scelte": [
+                    {
+                        "testo": "Combattere il mostro",
+                        "next": "nodo_5"
+                    },
+                    {
+                        "testo": "Fuggire",
+                        "next": "inizio"
+                    }
+                ]
+            },
+            "nodo_4": {
+                "testo": "Hai trovato la chiave speciale! Ora puoi superare il cancello magico.",
+                "scelte": [
+                    {
+                        "testo": "Superare il cancello",
+                        "next": "nodo_6"
+                    },
+                    {
+                        "testo": "Torna indietro",
+                        "next": "inizio"
+                    }
+                ]
+            },
+            "nodo_5": {
+                "testo": "Hai combattuto il mostro e l'hai sconfitto! Ora puoi procedere sulla tua strada.",
+                "scelte": [
+                    {
+                        "testo": "Procedere",
+                        "next": "nodo_6"
+                    },
+                    {
+                        "testo": "Ritorna al villaggio",
+                        "next": "inizio"
+                    }
+                ]
+            },
+            "nodo_6": {
+                "testo": "Ti trovi nel tempio. Il tuo obiettivo è vicino!",
+                "scelte": [
+                    {
+                        "testo": "Trovare l'Amuleto del Sole",
+                        "next": "fine"
+                    },
+                    {
+                        "testo": "Esplorare il tempio",
+                        "next": "nodo_7"
+                    }
+                ]
+            },
+            "nodo_7": {
+                "testo": "Il tempio è pieno di segreti e misteri. Devi decidere cosa fare.",
+                "scelte": [
+                    {
+                        "testo": "Risolvere l'enigma",
+                        "next": "fine"
+                    },
+                    {
+                        "testo": "Combattere il nemico",
+                        "next": "nodo_8"
+                    }
+                ]
+            },
+            "nodo_8": {
+                "testo": "Hai sconfitto il nemico! Ora puoi procedere sulla tua strada.",
+                "scelte": [
+                    {
+                        "testo": "Procedere",
+                        "next": "fine"
+                    },
+                    {
+                        "testo": "Ritorna al villaggio",
+                        "next": "inizio"
+                    }
+                ]
+            },
+            "fine": {
+                "testo": "Hai recuperato l'Amuleto del Sole! La tua avventura è stata un successo!",
+                "scelte": []
+            }
+        };
+
+        function loadNode(nodeKey) {
+            if (!storyData[nodeKey]) return;
+            const node = storyData[nodeKey];
+            document.getElementById('story-text').innerHTML = node.testo;
+            document.getElementById('choices-container').innerHTML = '';
+            document.getElementById('game-over').style.display = 'none';
+            if (node.scelte && node.scelte.length > 0) {
+                node.scelte.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.textContent = choice.testo;
+                    button.className = 'choice-button';
+                    button.onclick = () => loadNode(choice.next);
+                    document.getElementById('choices-container').appendChild(button);
+                });
+            } else {
+                document.getElementById('game-over').style.display = 'block';
+            }
+        }
+
+        window.onload = () => loadNode('inizio');
+    </script>
 </body>
 </html>
-```
-

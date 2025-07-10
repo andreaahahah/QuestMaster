@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storia Interattiva - Avventura nel Deserto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        #game-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 20px 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        #story-text {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #2d3748;
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+        }
+
+        #choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .choice-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .choice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .choice-button:active {
+            transform: translateY(0);
+        }
+
+        #game-over {
+            text-align: center;
+            font-size: 24px;
+            color: #38a169;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border: 2px solid #38a169;
+        }
+
+        #restart-btn {
+            background: #38a169;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        #restart-btn:hover {
+            background: #2f855a;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            #game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            #story-text {
+                font-size: 16px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Avventura nel Deserto</h1>
+        <div id="story-text"></div>
+        <div id="choices-container"></div>
+        <div id="game-over" style="display: none;">
+            <div> Fine dell'avventura! </div>
+            <button id="restart-btn" onclick="restartGame()">Ricomincia</button>
+        </div>
+    </div>
+
+    <script>
+        // Dati della storia
+        const storyData = {
+            "inizio": {
+                "testo": "Benvenuto nella storia interattiva! Sei un avventuriero che si perduto nel deserto. Il sole sta tramontando e non vedi segni di vita all'orizzonte. Tuttavia, noti una forma sull'orizzonte. Non  chiaro cosa sia, ma potrebbe essere la tua salvezza.\n\nScegli la tua prossima mossa:",
+                "scelte": [
+                    {"testo": "Andare a esaminare la forma", "next": "esamina-la-forma"}
+                ]
+            },
+            "esamina-la-forma": {
+                "testo": "Stai guardando la forma pi da vicino.  un vecchio fiume secco, ma sembra avere un aspetto strano. Noti che il terreno intorno  diventato pi fresco e umido. Potrebbe essere un indizio che c' acqua pi avanti.\n\nScegli la tua prossima mossa:",
+                "scelte": [
+                    {"testo": "Seguire il fiume secco", "next": "seguire-il-fiume-secco"},
+                    {"testo": "Ritornare indietro e cercare un'altra via", "next": "ritorna-indietro"}
+                ]
+            },
+            "seguire-il-fiume-secco": {
+                "testo": "Hai deciso di seguire il fiume secco. Non sai dove ti porter , ma potrebbe essere la tua salvezza.\n\nScegli la tua prossima mossa:",
+                "scelte": [
+                    {"testo": "Continuare a seguire il fiume secco", "next": "continua-a-seguire-il-fiume-secco"},
+                    {"testo": "Tornare indietro e cercare un'altra via", "next": "ritorna-indietro"}
+                ]
+            },
+            "ritorna-indietro": {
+                "testo": "Hai deciso di tornare indietro. Non  chiaro cosa ti attende, ma potresti trovare un'altra via.\n\nScegli la tua prossima mossa:",
+                "scelte": [
+                    {"testo": "Ritornare all'inizio e ricominciare", "next": "inizio"}
+                ]
+            },
+            "continua-a-seguire-il-fiume-secco": {
+                "testo": "Hai deciso di continuare a seguire il fiume secco.  un po' pi lungo, ma potresti trovare acqua fresca.\n\nScegli la tua prossima mossa:",
+                "scelte": [
+                    {"testo": "Continuare a seguire il fiume secco", "next": "fine-dell-avventura"}
+                ]
+            },
+            "fine-dell-avventura": {
+                "testo": "Hai raggiunto la fine della tua avventura! Congratulazioni!\n\nIl tuo viaggio  finito. Hai trovato un'oasi nascosta con acqua fresca e palme che offrono ombra. Sei salvo!",
+                "scelte": []
+            }
+        };
+
+        let currentNode = 'inizio';
+        let gameHistory = [];
+
+        // Funzione per caricare un nodo
+        function loadNode(nodeKey) {
+            console.log('Caricando nodo:', nodeKey);
+
+            // Verifica se il nodo esiste
+            if (!storyData[nodeKey]) {
+                document.getElementById('story-text').innerHTML = '<strong>ERRORE:</strong> Nodo "' + nodeKey + '" non trovato!';
+                return;
+            }
+
+            const node = storyData[nodeKey];
+            currentNode = nodeKey;
+
+            // Aggiungi alla cronologia
+            gameHistory.push(nodeKey);
+
+            // Mostra il testo con animazione
+            const storyTextElement = document.getElementById('story-text');
+            storyTextElement.classList.remove('fade-in');
+
+            // Sostituisci i caratteri \n e \r\n con <br>
+            const formattedText = node.testo.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>');
+            storyTextElement.innerHTML = formattedText;
+
+            // Aggiungi animazione
+            setTimeout(() => {
+                storyTextElement.classList.add('fade-in');
+            }, 50);
+
+            // Pulisci le scelte precedenti
+            clearChoices();
+
+            // Mostra le scelte o il finale
+            if (node.scelte && node.scelte.length > 0) {
+                displayChoices(node.scelte);
+            } else {
+                showGameOver();
+            }
+        }
+
+        // Funzione per mostrare le scelte
+        function displayChoices(choices) {
+            const container = document.getElementById('choices-container');
+
+            choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.textContent = choice.testo;
+                button.className = 'choice-button';
+
+                // Aggiungi evento click
+                button.onclick = function() {
+                    handleChoice(choice.next);
+                };
+
+                // Aggiungi con leggero ritardo per animazione
+                setTimeout(() => {
+                    button.classList.add('fade-in');
+                    container.appendChild(button);
+                }, index * 100);
+            });
+        }
+
+        // Funzione per pulire le scelte
+        function clearChoices() {
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+            document.getElementById('game-over').style.display = 'none';
+        }
+
+        // Funzione per gestire una scelta
+        function handleChoice(nextNode) {
+            if (nextNode && storyData[nextNode]) {
+                loadNode(nextNode);
+            } else {
+                console.error('Nodo non valido:', nextNode);
+            }
+        }
+
+        // Funzione per mostrare il finale
+        function showGameOver() {
+            setTimeout(() => {
+                document.getElementById('game-over').style.display = 'block';
+                document.getElementById('game-over').classList.add('fade-in');
+            }, 500);
+        }
+
+        // Funzione per ricominciare il gioco
+        function restartGame() {
+            gameHistory = [];
+            currentNode = 'inizio';
+            document.getElementById('game-over').style.display = 'none';
+            loadNode('inizio');
+        }
+
+        // Inizializza il gioco al caricamento della pagina
+        window.onload = function() {
+            console.log('Gioco inizializzato');
+            console.log('Dati storia:', storyData);
+            loadNode('inizio');
+        };
+
+        // Gestione errori JavaScript
+        window.onerror = function(msg, url, line, col, error) {
+            console.error('Errore JavaScript:', msg, 'alla riga', line);
+            return false;
+        };
+    </script>
+</body>
+</html>

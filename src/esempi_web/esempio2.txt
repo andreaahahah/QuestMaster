@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storia Interattiva - Mistero nel Castello</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6741 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        #game-container {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            margin: 20px 0;
+            border: 3px solid #8b4513;
+        }
+
+        h1 {
+            text-align: center;
+            color: #8b4513;
+            margin-bottom: 30px;
+            font-size: 2.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #story-text {
+            font-size: 19px;
+            line-height: 1.9;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            background: linear-gradient(145deg, #ffffff, #f1f3f4);
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 5px solid #8b4513;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .choice-button {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .choice-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.6);
+        }
+
+        .choice-button:hover:before {
+            left: 100%;
+        }
+
+        .choice-button:active {
+            transform: translateY(-1px);
+        }
+
+        #game-over {
+            text-align: center;
+            font-size: 26px;
+            color: #8b4513;
+            margin-top: 35px;
+            padding: 25px;
+            background: linear-gradient(145deg, #fff8dc, #f5deb3);
+            border-radius: 15px;
+            border: 3px solid #8b4513;
+            box-shadow: 0 8px 20px rgba(139, 69, 19, 0.3);
+        }
+
+        #restart-btn {
+            background: linear-gradient(135deg, #228b22 0%, #32cd32 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(34, 139, 34, 0.4);
+        }
+
+        #restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 139, 34, 0.6);
+        }
+
+        .mystery-icon {
+            float: left;
+            font-size: 2em;
+            margin-right: 15px;
+            margin-top: -5px;
+        }
+
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            #game-container {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            #story-text {
+                font-size: 17px;
+                padding: 25px;
+            }
+
+            .choice-button {
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1> Mistero nel Castello</h1>
+        <div id="story-text"></div>
+        <div id="choices-container"></div>
+        <div id="game-over" style="display: none;">
+            <div class="mystery-icon"></div>
+            <div>Mistero risolto!</div>
+            <button id="restart-btn" onclick="restartGame()">Inizia una nuova indagine</button>
+        </div>
+    </div>
+
+    <script>
+        // Dati della storia di mistero
+        const storyData = {
+            "inizio": {
+                "testo": " È una notte tempestosa e ti trovi davanti al castello di Lord Blackwood. Sei un detective privato chiamato per risolvere la misteriosa scomparsa del famoso quadro 'La Dama in Blu'. Il maggiordomo ti accoglie con un sorriso inquietante.\n\n'Benvenuto, detective. Il padrone vi aspetta nella biblioteca. Ma... fate attenzione. In questa casa accadono cose molto strane.'\n\nCosa decidi di fare?",
+                "scelte": [
+                    {"testo": " Andare direttamente in biblioteca da Lord Blackwood", "next": "biblioteca"},
+                    {"testo": " Ispezionare prima la hall d'ingresso", "next": "hall"},
+                    {"testo": " Interrogare il maggiordomo sui 'fatti strani'", "next": "interroga-maggiordomo"}
+                ]
+            },
+            "biblioteca": {
+                "testo": " Entri nella biblioteca. Lord Blackwood, un uomo distinto sui cinquant'anni, ti accoglie fumando la pipa. Dietro di lui, noti uno spazio vuoto sulla parete dove evidentemente era appeso il quadro rubato.\n\n'Detective, sono disperato! La Dama in Blu è scomparsa tre notti fa. È un quadro di famiglia, vale una fortuna. Non ho idea di chi possa averlo rubato.'\n\nNoti che le sue mani tremano leggermente...",
+                "scelte": [
+                    {"testo": " Esaminare lo spazio vuoto dove era appeso il quadro", "next": "esamina-quadro"},
+                    {"testo": " Chiedere chi aveva accesso alla biblioteca", "next": "accesso-biblioteca"},
+                    {"testo": " Notare il nervosismo di Lord Blackwood", "next": "nervosismo"}
+                ]
+            },
+            "hall": {
+                "testo": " La hall è immensa e buia. Noti delle impronte di fango sul pavimento di marmo, nonostante la pioggia sia iniziata solo stasera. Strani... Inoltre, c'è un piccolo pezzo di tela colorata vicino alla scala principale.\n\nImprovvisamente senti dei passi al piano superiore, anche se tutti dovrebbero essere al piano terra.",
+                "scelte": [
+                    {"testo": " Seguire le impronte di fango", "next": "segui-impronte"},
+                    {"testo": " Raccogliere il pezzo di tela", "next": "tela"},
+                    {"testo": " Salire al piano superiore per investigare i rumori", "next": "piano-superiore"}
+                ]
+            },
+            "interroga-maggiordomo": {
+                "testo": " Il maggiordomo, un uomo anziano di nome Herbert, ti guarda con occhi penetranti.\n\n'Oh, detective, questa casa è piena di segreti. Porte che si aprono da sole, quadri che cambiano posizione, voci nella notte... E tre giorni fa, ho visto una figura incappucciata aggirarsi nel giardino. Ma quando sono andato a controllare, non c'era nessuno.'\n\nLe sue parole ti fanno venire i brividi...",
+                "scelte": [
+                    {"testo": " Chiedere dettagli sulla figura incappucciata", "next": "figura-incappucciata"},
+                    {"testo": " Domandare sui quadri che cambiano posizione", "next": "quadri-movimento"},
+                    {"testo": " Ispezionare il giardino", "next": "giardino"}
+                ]
+            },
+            "esamina-quadro": {
+                "testo": " Esaminando attentamente lo spazio vuoto, noti che i chiodi sono stati rimossi con cura, non strappati. Un lavoro professionale. Inoltre, trovi un piccolo biglietto nascosto dietro la cornice rimasta: 'La verità giace dove la luna non splende mai.'\n\nUn indizio criptico...",
+                "scelte": [
+                    {"testo": " Cercare un luogo dove la luna non splende mai", "next": "cantina"},
+                    {"testo": "️ Confrontare la calligrafia con quella di Lord Blackwood", "next": "calligrafia"}
+                ]
+            },
+            "cantina": {
+                "testo": " Scendi nella cantina del castello. È buia e umida. Improvvisamente, la tua torcia illumina qualcosa di incredibile: il quadro 'La Dama in Blu' è appeso al muro, perfettamente intatto! Ma accanto ad esso c'è un altro quadro identico...\n\nDue quadri identici? Uno deve essere un falso!",
+                "scelte": [
+                    {"testo": " Esaminare entrambi i quadri per trovare differenze", "next": "confronta-quadri"},
+                    {"testo": " Fare foto come prova prima di muovere qualcosa", "next": "foto-prova"}
+                ]
+            },
+            "confronta-quadri": {
+                "testo": " Dopo un'attenta analisi, scopri che uno dei due quadri ha una piccola differenza: la firma dell'artista è leggermente diversa. Improvvisamente senti dei passi alle tue spalle...\n\n'Complimenti detective,' dice una voce familiare. Ti giri e vedi Lord Blackwood con un sorriso colpevole. 'Hai scoperto il mio segreto. Il quadro originale è sempre stato qui. Quello rubato era la copia che tenevo in biblioteca per proteggerlo. Ma ora... qualcuno ha rubato la copia e io non so chi.'",
+                "scelte": [
+                    {"testo": " Chiedere perché non ha detto la verità dall'inizio", "next": "verita-finale"}
+                ]
+            },
+            "verita-finale": {
+                "testo": " Lord Blackwood sospira profondamente. 'La verità è che mia figlia Emily è una kleptomane. Spesso ruba oggetti dalla casa per poi nasconderli. Pensavo avesse preso la copia, ma quando ho controllato i suoi nascondigli abituali, non c'era. Per questo ho chiamato voi, sperando di risolvere tutto discretamente.'\n\nAll'improvviso, Emily appare dalle scale della cantina, tenendo un piccolo quadro. 'Papà, scusa... l'ho preso io, ma l'ho nascosto perché mi faceva paura. La dama sembrava guardarmi!'\n\nMistero risolto! Era solo una ragazza spaventata che aveva nascosto il quadro.",
+                "scelte": []
+            },
+            "foto-prova": {
+                "testo": " Fai le foto di entrambi i quadri. Improvvisamente senti una voce dietro di te: 'Non dovevi venire qui, detective.' Ti giri e vedi Herbert, il maggiordomo, con un'espressione minacciosa.\n\n'Io... io stavo solo proteggendo la famiglia. Emily ha problemi, sa? Ruba le cose. Il padrone mi ha chiesto di nascondere la verità. Ma voi detective fate sempre troppe domande!'\n\nCapisci che Herbert stava solo cercando di proteggere la famiglia dai pettegolezzi. Il mistero è più complesso di quanto pensassi.",
+                "scelte": [
+                    {"testo": " Rassicurare Herbert che manterrai il segreto", "next": "segreto-mantenuto"}
+                ]
+            },
+            "segreto-mantenuto": {
+                "testo": " 'Herbert, capisco che volevi solo proteggere la famiglia. Non dirò nulla a nessuno. Ma aiutami a capire: dov'è Emily ora?'\n\nHerbert, rassicurato, ti conduce da Emily che era nascosta nel suo rifugio segreto con il quadro. Lei confessa di averlo preso perché la spaventava, ma non voleva che suo padre si arrabbiasse.\n\nHai risolto il mistero con compassione, mantenendo unita la famiglia Blackwood. Il quadro è al sicuro e Emily riceverà l'aiuto di cui ha bisogno.",
+                "scelte": []
+            }
+        };
+
+        let currentNode = 'inizio';
+        let gameHistory = [];
+        let discoveredClues = [];
+
+        // Funzione per caricare un nodo
+        function loadNode(nodeKey) {
+            console.log(' Investigando:', nodeKey);
+
+            // Verifica se il nodo esiste
+            if (!storyData[nodeKey]) {
+                document.getElementById('story-text').innerHTML = '<strong> ERRORE:</strong> Traccia "' + nodeKey + '" perduta!';
+                return;
+            }
+
+            const node = storyData[nodeKey];
+            currentNode = nodeKey;
+
+            // Aggiungi alla cronologia delle indagini
+            gameHistory.push(nodeKey);
+
+            // Mostra il testo con animazione
+            const storyTextElement = document.getElementById('story-text');
+            storyTextElement.classList.remove('slide-in');
+
+            // Formatta il testo
+            const formattedText = node.testo.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>');
+            storyTextElement.innerHTML = formattedText;
+
+            // Aggiungi animazione
+            setTimeout(() => {
+                storyTextElement.classList.add('slide-in');
+            }, 50);
+
+            // Pulisci le scelte precedenti
+            clearChoices();
+
+            // Mostra le scelte o il finale
+            if (node.scelte && node.scelte.length > 0) {
+                displayChoices(node.scelte);
+            } else {
+                showGameOver();
+            }
+
+            // Effetto sonoro simulato (per atmosfera)
+            if (nodeKey === 'cantina') {
+                console.log(' *Suono di passi echeggianti*');
+            } else if (nodeKey === 'verita-finale') {
+                console.log(' *Sospiro di sollievo*');
+            }
+        }
+
+        // Funzione per mostrare le scelte
+        function displayChoices(choices) {
+            const container = document.getElementById('choices-container');
+
+            choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = choice.testo;
+                button.className = 'choice-button';
+
+                // Aggiungi evento click
+                button.onclick = function() {
+                    handleChoice(choice.next);
+                };
+
+                // Aggiungi con ritardo progressivo per effetto drammatico
+                setTimeout(() => {
+                    button.classList.add('slide-in');
+                    container.appendChild(button);
+                }, index * 150);
+            });
+        }
+
+        // Funzione per pulire le scelte
+        function clearChoices() {
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+            document.getElementById('game-over').style.display = 'none';
+        }
+
+        // Funzione per gestire una scelta
+        function handleChoice(nextNode) {
+            if (nextNode && storyData[nextNode]) {
+                // Aggiungi indizio scoperto
+                discoveredClues.push(nextNode);
+                console.log(' Indizio scoperto:', nextNode);
+
+                loadNode(nextNode);
+            } else {
+                console.error(' Traccia perduta:', nextNode);
+            }
+        }
+
+        // Funzione per mostrare il finale
+        function showGameOver() {
+            setTimeout(() => {
+                const gameOverElement = document.getElementById('game-over');
+                gameOverElement.style.display = 'block';
+                gameOverElement.classList.add('pulse');
+
+                console.log(' Caso risolto!');
+                console.log(' Indizi scoperti:', discoveredClues.length);
+                console.log(' Passi dell\'indagine:', gameHistory.length);
+            }, 800);
+        }
+
+        // Funzione per ricominciare l'indagine
+        function restartGame() {
+            gameHistory = [];
+            discoveredClues = [];
+            currentNode = 'inizio';
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('game-over').classList.remove('pulse');
+            console.log(' Nuova indagine iniziata');
+            loadNode('inizio');
+        }
+
+        // Inizializza l'indagine al caricamento della pagina
+        window.onload = function() {
+            console.log(' Benvenuto al castello di Lord Blackwood');
+            console.log(' Indagine iniziata');
+            console.log(' Dati del caso:', storyData);
+            loadNode('inizio');
+        };
+
+        // Gestione errori durante l'indagine
+        window.onerror = function(msg, url, line, col, error) {
+            console.error(' Errore durante l\'indagine:', msg, 'alla riga', line);
+            return false;
+        };
+    </script>
+</body>
+</html>
