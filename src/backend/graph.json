@@ -1,0 +1,123 @@
+{
+  "inizio": {
+    "testo": "Inizia la tua avventura a Liora. Il tuo obiettivo è recuperare l'Amuleto del Sole dall'antico tempio nascosto.",
+    "scelte": [
+      {
+        "testo": "Esplorare la foresta",
+        "next": "nodo_1"
+      },
+      {
+        "testo": "Raccogliere informazioni sul cancello magico",
+        "next": "nodo_2"
+      }
+    ]
+  },
+  "nodo_1": {
+    "testo": "Ti incammini verso nord, attraversando la foresta. La strada è lunga e pericolosa.",
+    "scelte": [
+      {
+        "testo": "Continua a camminare",
+        "next": "nodo_3"
+      },
+      {
+        "testo": "Torna indietro",
+        "next": "inizio"
+      }
+    ]
+  },
+  "nodo_2": {
+    "testo": "Il vecchio della foresta ti dà alcune informazioni sul cancello magico. Sei sulla strada giusta?",
+    "scelte": [
+      {
+        "testo": "Trovare la chiave speciale",
+        "next": "nodo_4"
+      },
+      {
+        "testo": "Ritorna al villaggio",
+        "next": "inizio"
+      }
+    ]
+  },
+  "nodo_3": {
+    "testo": "Ti trovi nella foresta. La strada è lunga e pericolosa. Devi decidere cosa fare.",
+    "scelte": [
+      {
+        "testo": "Combattere il mostro",
+        "next": "nodo_5"
+      },
+      {
+        "testo": "Fuggire",
+        "next": "inizio"
+      }
+    ]
+  },
+  "nodo_4": {
+    "testo": "Hai trovato la chiave speciale! Ora puoi superare il cancello magico.",
+    "scelte": [
+      {
+        "testo": "Superare il cancello",
+        "next": "nodo_6"
+      },
+      {
+        "testo": "Torna indietro",
+        "next": "inizio"
+      }
+    ]
+  },
+  "nodo_5": {
+    "testo": "Hai combattuto il mostro e l'hai sconfitto! Ora puoi procedere sulla tua strada.",
+    "scelte": [
+      {
+        "testo": "Procedere",
+        "next": "nodo_6"
+      },
+      {
+        "testo": "Ritorna al villaggio",
+        "next": "inizio"
+      }
+    ]
+  },
+  "nodo_6": {
+    "testo": "Ti trovi nel tempio. Il tuo obiettivo è vicino!",
+    "scelte": [
+      {
+        "testo": "Trovare l'Amuleto del Sole",
+        "next": "fine"
+      },
+      {
+        "testo": "Esplorare il tempio",
+        "next": "nodo_7"
+      }
+    ]
+  },
+  "nodo_7": {
+    "testo": "Il tempio è pieno di segreti e misteri. Devi decidere cosa fare.",
+    "scelte": [
+      {
+        "testo": "Risolvere l'enigma",
+        "next": "fine"
+      },
+      {
+        "testo": "Combattere il nemico",
+        "next": "nodo_8"
+      }
+    ]
+  },
+  "nodo_8": {
+    "testo": "Hai sconfitto il nemico! Ora puoi procedere sulla tua strada.",
+    "scelte": [
+      {
+        "testo": "Procedere",
+        "next": "fine"
+      },
+      {
+        "testo": "Ritorna al villaggio",
+        "next": "inizio"
+      }
+    ]
+  },
+  "fine": {
+    "testo": "Hai recuperato l'Amuleto del Sole! La tua avventura è stata un successo!",
+    "scelte": []
+  }
+}
