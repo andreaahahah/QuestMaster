@@ -1,18 +1,8 @@
-import re
 from pathlib import Path
-
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from src.file_dei_path import file_path, esempi_path, guida_path
 
-from src.agenti.pddl_generator_agent import load_pddl_examples
-
-# Path alle cartelle
-file_path = Path("documents/output")
-esempi_path = Path("documents/esempi_storie")
-guida_path = Path("documents/guida_pddl")
-
-
-# Funzione per caricare tutti i file da una cartella
 def load_pddl_folder(folder: Path) -> str:
     if not folder.exists() or not folder.is_dir():
         raise FileNotFoundError(f"Cartella non trovata: {folder}")
@@ -25,7 +15,6 @@ def load_pddl_folder(folder: Path) -> str:
     return content.strip()
 
 
-# Configurazione LLM
 llm = ChatOllama(
     model="llama3",
     temperature=0.7,
@@ -37,7 +26,6 @@ def refine_pddl_chat(errore: str):
     guida = load_pddl_folder(guida_path)
     file_content = load_pddl_folder(file_path)
 
-    # Creo il system_message dinamico
     system_message = (
         "Sei un esperto di PDDL. Analizza i seguenti file PDDL:\n"
         f"{file_content}\n\n"
@@ -48,7 +36,6 @@ def refine_pddl_chat(errore: str):
         "se ti viene detto di applicare le modifiche tu lo fai e NON AGGIUNGI COMMENTI"
     )
 
-    # Messaggi strutturati
     history = [
         SystemMessage(content=system_message),
         HumanMessage(
@@ -57,16 +44,16 @@ def refine_pddl_chat(errore: str):
 
     while True:
         response = llm.invoke(history)
-        print(f"\n🦙 Llama3: {response.content}\n")
+        print(f"\n Llama3: {response.content}\n")
 
-        user_input = input("💬 Tu: ")
+        user_input = input(" Tu {PER CHIUDERE SCRIVERE \"applica modifiche\" }: ")
 
+        #verifico le keywords
         if user_input.lower() in ["exit", "esci", "quit"]:
-            print("👋 Chat terminata.")
+            print("\n Chat terminata.\n")
             break
 
-        if user_input.lower() in ["applica modifiche"]:
-
+        if user_input.lower() in ["applica modifiche"] :
 
             domain_start = response.content.find("(define (domain")
             problem_start = response.content.find("(define (problem")
@@ -77,7 +64,7 @@ def refine_pddl_chat(errore: str):
             output_folder = Path("documents/corretti")
             output_folder.mkdir(parents=True, exist_ok=True)
 
-            # Salvataggio dei file separati
+            # salvataggio dei file separati
             domain_file_path = output_folder / "domain_corretto.pddl"
             problem_file_path = output_folder / "problem_corretto.pddl"
 

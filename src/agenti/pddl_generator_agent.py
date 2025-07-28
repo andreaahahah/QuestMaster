@@ -54,7 +54,7 @@ def generate_pddl_from_story(story: str, examples: str, guida: str) -> dict:
 
     content = response["message"]["content"]
 
-    # Estrai i due blocchi separati
+    #separo i blocchi
     domain_start = content.find("**DOMAIN**")
     problem_start = content.find("**PROBLEM**")
 
@@ -64,7 +64,7 @@ def generate_pddl_from_story(story: str, examples: str, guida: str) -> dict:
     return {"domain": domain, "problem": problem}
 
 
-# Funzione principale chiamata da main
+#funzione da chiamare
 def generate_pddl_files_from_lore(lore_text: str, examples_folder: Path,guide_path: Path) -> dict:
     guida = load_pddl_examples(guide_path)
     examples = load_pddl_examples(examples_folder)

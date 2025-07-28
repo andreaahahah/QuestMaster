@@ -1,3 +1,6 @@
+e file PDDL generati a partire dalla descrizione narrativa:
+
+[DOMAIN]
 (define (domain arlen-quest)
   (:requirements :strips :typing)
 
@@ -31,9 +34,40 @@
     :effect (not (bloccato ?l))
   )
 
-  (:action sconfiggi
-    :parameters (?p - personaggio ?c - oggetto ?l - luogo)
-    :precondition (and (in ?p ?l) (usa ?c ?l))
-    :effect (not (bloccato ?l))
+  (:action apre-cancello
+    :parameters (?p - personaggio ?c - luogo)
+    :precondition (and (in ?p ?c) (collezionato ?p "chiave"))
+    :effect (not (bloccato ?c))
   )
 )
+
+[PROBLEM]
+(define (problem arlen-problema)
+  (:domain arlen-quest)
+
+  (:objects
+    arlen - personaggio
+    liora foresta tempio - luogo
+    machete corda amuleto-del-sole chiave - oggetto
+  )
+
+  (:init
+    (in arlen liora)
+    (accessibile liora foresta)
+    (accessibile foresta tempio)
+    (bloccato foresta)
+    (bloccato tempio)
+    (usa machete foresta)
+    (usa corda tempio)
+    (not (collezionato arlen chiave))
+  )
+
+  (:goal
+    (and
+      (in arlen tempio)
+      (collezionato arlen amuleto-del-sole)
+    )
+  )
+)
+
+Nota: Ho aggiunto un'azione "apre-cancello" per permettere a Arlen di superare il cancello magico con la chiave speciale

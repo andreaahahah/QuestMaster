@@ -1,17 +1,14 @@
 import subprocess
-from pathlib import Path
-
 from src.agenti import reflection_agent
 from src.human.human_in_the_loop import apri_editor
 
 
 def validate_pddl(primavolta,domain_file_corretto,problem_file_corretto):
-    # Path già in formato WSL
+    # path WSL
     domain_file = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/output/domain.pddl"
     problem_file = "/mnt/c/Users/butterfly/Desktop/ciao/MAGISTRALE/AI/llama3/src/documents/output/problem.pddl"
 
     try:
-        wsl_working_directory = "/wsl.localhost/Ubuntu/home/andrea/downward"
 
         if primavolta == 0:
             # Comando come stringa
@@ -27,21 +24,16 @@ def validate_pddl(primavolta,domain_file_corretto,problem_file_corretto):
 
         full_command = ["wsl", "sh", "-c", command]
 
-        print(f"Running command: {' '.join(full_command)}")
+        print("VALIDO IL PDDL")
 
         result = subprocess.run(full_command, capture_output=True, text=True, timeout=60)
 
-        print("--- STDOUT ---")
-        print(result.stdout)
-        print("--- STDERR ---")
-        #print(result.stderr) CI DA I PROBLEMI DEI FILE PDDL
-
 
         if "Solution found" in result.stdout:
-            print("✅ Valid PDDL files and solvable problem.")
+            print("PDDL VALIDI E RISOLVIBILI")
             return True
         else:
-            print("❌ Valid syntax but problem not solvable.")
+            print("SINTASSI VALIDA MA PROBLEMA NON RISOLVIBILE")
             if primavolta == 0:
                 reflection_agent.refine_pddl_chat(result.stderr)
             elif primavolta == 1:

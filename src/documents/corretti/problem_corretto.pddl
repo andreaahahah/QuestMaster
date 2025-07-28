@@ -3,24 +3,26 @@
 
   (:objects
     arlen - personaggio
-    liora foresta montagna tempio - luogo
-    machete corda amuleto-del-sol - oggetto
+    liora foresta tempio - luogo
+    machete corda amuleto-del-sole chiave - oggetto
   )
 
   (:init
     (in arlen liora)
     (accessibile liora foresta)
-    (accessible foresta montagna)
-    (accessible montagna tempio)
+    (accessibile foresta tempio)
+    (bloccato foresta)
+    (bloccato tempio)
     (usa machete foresta)
-    (usa corda montagna)
+    (usa corda tempio)
+    (not (collezionato arlen chiave))
   )
 
   (:goal
     (and
-      (in arlen tempio)
-      (collezionato arlen amuleto-del-sol)
-      (usa amuleto-del-sol tempio)
+      (apre-cancello arlen tempio) ; Arlen opens the door to the temple
+      (in arlen tempio)          ; Arlen is in the temple
+      (collezionato arlen amuleto-del-sole) ; Arlen has collected the amulet of the sun
     )
   )
 )

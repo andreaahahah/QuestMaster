@@ -1,8 +1,31 @@
 from pathlib import Path
-import subprocess
+import re
+from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-# Path all'esempio HTML (può essere un template minimale già funzionante)
-esempio = Path(r"C:\Users\butterfly\Desktop\ciao\MAGISTRALE\AI\llama3\src\documents\corretti\domain_corretto.pddl")
+
+llm = ChatOllama(model="llama3", temperature=0.9)
+
+#METODO CREATO PER PROBLEMI CON L'ENCODING
+def safe_read_text(file_path: Path, encodings=['utf-8', 'utf-8-sig', 'latin-1', 'cp1252', 'iso-8859-1']):
+    for encoding in encodings:
+        try:
+            with open(file_path, 'r', encoding=encoding) as f:
+                return f.read()
+        except:
+            continue
+    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        return f.read()
+
+
+def safe_write_text(file_path: Path, content: str, encoding='utf-8'):
+    try:
+        with open(file_path, 'w', encoding=encoding) as f:
+            f.write(content)
+    except Exception as e:
+        print(f" Errore durante la scrittura: {e}")
+
+
 
 
 def genera_prompt_frontend(json_story: str, esempio1: str) -> str:
@@ -71,166 +94,34 @@ FORMATO RICHIESTO:
 INIZIA SUBITO CON <!DOCTYPE html>"""
 
 
-def safe_read_text(file_path: Path, encodings=['utf-8', 'utf-8-sig', 'latin-1', 'cp1252', 'iso-8859-1']):
-    """
-    Legge un file di testo provando diversi encoding fino a trovare quello corretto.
-    Args:
-        file_path: Path al file da leggere
-        encodings: Lista di encoding da provare in ordine di priorità
-    Returns:
-        str: Contenuto del file
-    Raises:
-        UnicodeDecodeError: Se nessun encoding funziona
-    """
-    for encoding in encodings:
-        try:
-            with open(file_path, 'r', encoding=encoding) as f:
-                content = f.read()
-                print(f"✅ File letto con encoding: {encoding}")
-                return content
-        except UnicodeDecodeError:
-            print(f"❌ Fallito con encoding: {encoding}")
-            continue
-        except Exception as e:
-            print(f"❌ Errore durante la lettura con {encoding}: {e}")
-            continue
-    # Se tutti gli encoding falliscono, prova con 'errors='ignore''
-    try:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-            content = f.read()
-            print("⚠️ File letto con utf-8 ignorando errori (alcuni caratteri potrebbero essere persi)")
-            return content
-    except Exception as e:
-        raise UnicodeDecodeError(f"Impossibile leggere il file {file_path} con nessun encoding testato: {e}")
-
-
-def safe_write_text(file_path: Path, content: str, encoding='utf-8'):
-    """
-    Scrive un file di testo con gestione sicura dell'encoding.
-    Args:
-        file_path: Path dove salvare il file
-        content: Contenuto da scrivere
-        encoding: Encoding da usare (default: utf-8)
-    """
-    try:
-        with open(file_path, 'w', encoding=encoding) as f:
-            f.write(content)
-        print(f"✅ File scritto con encoding: {encoding}")
-    except Exception as e:
-        print(f"❌ Errore durante la scrittura: {e}")
-        # Fallback: prova con utf-8 ignorando errori
-        try:
-            with open(file_path, 'w', encoding='utf-8', errors='ignore') as f:
-                f.write(content)
-            print("⚠️ File scritto con utf-8 ignorando errori")
-        except Exception as e2:
-            raise Exception(f"Impossibile scrivere il file: {e2}")
-
-
-def genera_frontend_con_ollama(json_story_path: Path, output_path: Path):
-    """
-    Genera un frontend HTML usando Ollama con gestione corretta dell'encoding.
-    """
-    try:
-        # Carica i file con gestione sicura dell'encoding
-        esempio1_path = Path(r"C:\Users\butterfly\Desktop\ciao\MAGISTRALE\AI\llama3\src\esempi_web\esempio1.txt")
-        # Verifica che i file esistano
-        if not esempio1_path.exists():
-            print(f"❌ File non trovato: {esempio1_path}")
-            return
-        if not json_story_path.exists():
-            print(f"❌ File non trovato: {json_story_path}")
-            return
-        # Leggi i file con gestione sicura dell'encoding
-        print("📖 Lettura dei file...")
-        esempio1 = safe_read_text(esempio1_path)
-        json_story = safe_read_text(json_story_path)
-        # Genera prompt
-        prompt = genera_prompt_frontend(json_story, esempio1)
-        print("🧠 Generazione HTML tramite Ollama...\n")
-        # Chiama Ollama via subprocess con encoding UTF-8
-        proc = subprocess.Popen(
-            ["ollama", "run", "llama3"],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding='utf-8',
-            errors='replace'  # Sostituisce caratteri non decodificabili
-        )
-        stdout, stderr = proc.communicate(prompt)
-        if stderr:
-            print("❌ Errore Ollama:", stderr)
-        if stdout:
-            # Pulisce l'output da eventuali commenti o testo extra
-            html_content = clean_html_output(stdout)
-            # Salva l'output HTML con gestione sicura dell'encoding
-            safe_write_text(output_path, html_content)
-            print(f"✅ Frontend salvato in: {output_path}")
-        else:
-            print("❌ Nessun output ricevuto da Ollama")
-    except Exception as e:
-        print(f"❌ Errore generale: {e}")
-
-
 def clean_html_output(raw_output: str) -> str:
-    """
-    Pulisce l'output di Ollama per estrarre solo il codice HTML valido.
-    """
-    import re
-    # Trova l'inizio del DOCTYPE
     doctype_match = re.search(r'<!DOCTYPE html>', raw_output, re.IGNORECASE)
-    if not doctype_match:
-        print("⚠️ DOCTYPE non trovato, cerco tag <html>")
-        html_match = re.search(r'<html[^>]*>', raw_output, re.IGNORECASE)
-        if html_match:
-            start_pos = html_match.start()
-        else:
-            print("❌ Nessun tag HTML valido trovato")
-            return raw_output
-    else:
-        start_pos = doctype_match.start()
-    # Trova la fine del tag </html>
+    start_pos = doctype_match.start() if doctype_match else 0
     end_match = re.search(r'</html>', raw_output, re.IGNORECASE)
-    if end_match:
-        end_pos = end_match.end()
-        html_content = raw_output[start_pos:end_pos]
-    else:
-        # Se non trova </html>, prende tutto dal DOCTYPE in poi
-        html_content = raw_output[start_pos:]
-    # Rimuove eventuali commenti o testo prima/dopo
-    html_content = html_content.strip()
-    print(f"🧹 HTML pulito: {len(html_content)} caratteri")
+    end_pos = end_match.end() if end_match else len(raw_output)
+    html_content = raw_output[start_pos:end_pos].strip()
     return html_content
 
 
-# Funzione di utilità per diagnosticare l'encoding di un file
-def detect_file_encoding(file_path: Path):
-    """
-    Tenta di rilevare l'encoding di un file.
-    Richiede il pacchetto 'chardet': pip install chardet
-    """
-    try:
-        import chardet
-        with open(file_path, 'rb') as f:
-            raw_data = f.read()
-        result = chardet.detect(raw_data)
-        print(f"🔍 Encoding rilevato per {file_path}: {result}")
-        return result
-    except ImportError:
-        print("⚠️ Per il rilevamento automatico dell'encoding, installa: pip install chardet")
-        return None
-    except Exception as e:
-        print(f"❌ Errore nel rilevamento encoding: {e}")
-        return None
+def genera_frontend_con_chat(json_story_path: Path, esempio1_path: Path, output_path: Path):
+    if not json_story_path.exists() or not esempio1_path.exists():
+        print("Uno dei file richiesti non esiste.")
+        return
+
+    json_story = safe_read_text(json_story_path)
+    esempio1 = safe_read_text(esempio1_path)
+
+    prompt = genera_prompt_frontend(json_story, esempio1)
+
+    history = [
+        SystemMessage(content="Sei un esperto sviluppatore frontend. Rispondi SOLO con il codice HTML richiesto, senza aggiungere commenti o testo extra."),
+        HumanMessage(content=prompt)
+    ]
+
+    print("GENERAZIONE HTML")
+    response = llm.invoke(history)
+
+    html_pulito = clean_html_output(response.content)
+    safe_write_text(output_path, html_pulito)
 
 
-# Esempio di utilizzo
-if __name__ == "__main__":
-    # Test della funzione
-    json_path = Path("test_story.json")
-    output_path = Path("output.html")
-    # Opzionalmente, rileva l'encoding prima di leggere
-    # detect_file_encoding(json_path)
-    # Genera il frontend
-    genera_frontend_con_ollama(json_path, output_path)

@@ -1,4 +1,4 @@
-📚 Guida Avanzata al PDDL per LLM: Generazione Sintatticamente e Semanticamente Corretta
+ Guida Avanzata al PDDL per LLM: Generazione Sintatticamente e Semanticamente Corretta
 
 Questa guida è progettata per insegnarti a generare codice PDDL (Planning Domain Definition Language) corretto. Il PDDL è un linguaggio standardizzato basato su LISP per descrivere problemi di pianificazione dell'IA. È fondamentale prestare attenzione alla sintassi (parentesi, parole chiave) e alla semantica (coerenza logica e rispetto delle definizioni).
 
@@ -228,7 +228,7 @@ Esempio:
 
 ---
 
-### ❗️ Riepilogo Errori Comuni e Regole Sintattico/Semantiche Fondamentali
+###  Riepilogo Errori Comuni e Regole Sintattico/Semantiche Fondamentali
 
 1.  Coerenza Nomi Dominio: (domain nome-dominio) in domain.pddl deve corrispondere a (:domain nome-dominio) in problem.pddl.
 2.  Dichiarazione Predicati: Ogni predicato usato in :init, :goal, o nelle :precondition/:effect di un'azione deve essere dichiarato nella sezione (:predicates) del dominio.
@@ -249,7 +249,7 @@ Esempio:
 
 ---
 
-### 🔑 Riepilogo Parole Chiave Fondamentali
+###  Riepilogo Parole Chiave Fondamentali
 
 | Parola Chiave  | File         | Sezione Primaria     | Scopo Principale                                        |
 |----------------|--------------|----------------------|---------------------------------------------------------|
@@ -275,7 +275,7 @@ Esempio:
 
 ---
 
-### 💡 Consigli Avanzati per la Generazione da Parte dell'LLM
+###  Consigli Avanzati per la Generazione da Parte dell'LLM
 
 1.  Prioritizza la Correttezza Sintattica: Le parentesi devono sempre bilanciarsi. Le parole chiave devono essere corrette e nel posto giusto.
 2.  Rispetta le Dichiarazioni: Non usare mai un tipo, predicato, oggetto o costante che non sia stato prima dichiarato nella sezione appropriata.

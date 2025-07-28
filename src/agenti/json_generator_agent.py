@@ -1,11 +1,14 @@
 from pathlib import Path
-import subprocess
 import json
 
-domain_file_corretto = Path(
-    r"C:\Users\butterfly\Desktop\ciao\MAGISTRALE\AI\llama3\src\documents\corretti\domain_corretto.pddl")
-problem_file_corretto = Path(
-    r"C:\Users\butterfly\Desktop\ciao\MAGISTRALE\AI\llama3\src\documents\corretti\problem_corretto.pddl")
+from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage, HumanMessage
+
+from src.file_dei_path import domain_file_corretto, problem_file_corretto
+
+
+# Inizializzazione LLM
+llm = ChatOllama(model="llama3", temperature=0.7)
 
 
 def estrai_parametri_da_lore_path(lore_path: Path) -> dict:
@@ -46,7 +49,6 @@ Genera una struttura ad albero in JSON dove:
 - Ogni nodo ha un "testo" (narrazione) che deve essere articolato, abbastanza lungo e poi un array "scelte".
 - Ogni scelta ha un "testo" (azione) e un campo "next" con l'id del prossimo nodo.
 
-
 Formato esempio:
 {{
   "inizio": {{
@@ -72,6 +74,7 @@ Formato esempio:
 Genera tutto il grafo, partendo da "inizio", fino alla profondità massima.
 """
 
+
 def json_generator(
     lore: str,
     lore_path: Path
@@ -81,30 +84,22 @@ def json_generator(
     problem = problem_file_corretto.read_text()
     prompt = genera_prompt_grafo(lore, domain, problem, params)
 
-    print("🧠 Invio prompt a Ollama...\n")
+    messages = [
+        SystemMessage(content="Rispondi esclusivamente con un oggetto JSON valido che rappresenta la storia."),
+        HumanMessage(content=prompt)
+    ]
 
-    proc = subprocess.Popen(
-        ["ollama", "run", "llama3"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
+    response = llm.invoke(messages)
 
-    stdout, stderr = proc.communicate(prompt)
+    raw_output = response.content
 
-    if stderr:
-        print("❌ Errore Ollama:", stderr)
-
-    # Cerca di estrarre il JSON dallo stdout
     try:
-        start = stdout.find("{")
-        end = stdout.rfind("}") + 1
-        json_output = stdout[start:end]
+        start = raw_output.find("{")
+        end = raw_output.rfind("}") + 1
+        json_output = raw_output[start:end]
         grafo = json.loads(json_output)
-        print("✅ Grafo generato con successo.")
+
         return grafo
     except Exception as e:
-        print("❌ Errore nella conversione in JSON:", e)
+        print("Errore nella conversione in JSON:", e)
         return {}
-

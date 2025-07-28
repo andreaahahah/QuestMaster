@@ -10,7 +10,8 @@
     (collezionato ?p - personaggio ?o - oggetto) ;; Il personaggio ha raccolto un oggetto
     (accessibile ?from - luogo ?to - luogo) ;;  possibile spostarsi da un luogo a un altro
     (bloccato ?l - luogo) ;; Il luogo ha un ostacolo che impedisce l'accesso
-    (usa ?o - oggetto ?l - luogo) => (not (bloccato ?l)) ;; Un oggetto pu essere usato per superare un luogo
+    (usa ?o - oggetto ?l - luogo) ;; Un oggetto pu essere usato per superare un luogo
+    (apre-cancello ?p - personaggio ?c - luogo) ;; Il personaggio apre il cancello di un luogo
   )
 
   (:action muovi
@@ -31,10 +32,10 @@
     :effect (not (bloccato ?l))
   )
 
-  (:action sconfiggi
-    :parameters (?p - personaggio ?c - oggetto ?l - luogo)
-    :precondition (and (in ?p ?l) (usa ?c ?l) (not (bloccato ?l)))
-    :effect (not (bloccato ?l))
+  (:action apre-cancello
+    :parameters (?p - personaggio ?c - luogo)
+    :precondition (and (in ?p ?c) (collezionato ?p "chiave"))
+    :effect (not (bloccato ?c))
   )
 )
 
