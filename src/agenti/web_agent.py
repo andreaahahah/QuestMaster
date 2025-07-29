@@ -51,13 +51,13 @@ FORMATO RICHIESTO:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Storia Interattiva</title>
 <style>
-        body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }}
-        #game-container {{ background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
-        #story-text {{ font-size: 18px; line-height: 1.6; margin-bottom: 25px; color: #333; }}
+        body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }}
+        #game-container {{ background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+        #story-text {{ font-size: 18px; line-height: 1.6; margin-bottom: 25px; color: #2d3748; }}
         #choices-container {{ display: flex; flex-direction: column; gap: 10px; }}
-        .choice-button {{ background: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }}
-        .choice-button:hover {{ background: #0056b3; }}
-        #game-over {{ text-align: center; font-size: 20px; color: #28a745; margin-top: 20px; }}
+        .choice-button {{ background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }}
+        .choice-button:hover {{ background: linear-gradient(135deg, #5b52f0 0%, #8b40f2 100%); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4); }}
+        #game-over {{ text-align: center; font-size: 20px; background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 20px; }}
 </style>
 </head>
 <body>

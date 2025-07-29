@@ -6,12 +6,11 @@
   )
 
   (:predicates
-    (in ?p - personaggio ?l - luogo) ;; Il personaggio si trova in un certo luogo
-    (collezionato ?p - personaggio ?o - oggetto) ;; Il personaggio ha raccolto un oggetto
-    (accessibile ?from - luogo ?to - luogo) ;;  possibile spostarsi da un luogo a un altro
-    (bloccato ?l - luogo) ;; Il luogo ha un ostacolo che impedisce l'accesso
-    (usa ?o - oggetto ?l - luogo) ;; Un oggetto pu essere usato per superare un luogo
-    (apre-cancello ?p - personaggio ?c - luogo) ;; Il personaggio apre il cancello di un luogo
+    (in ?p - personaggio ?l - luogo)
+    (collezionato ?p - personaggio ?o - oggetto)
+    (accessibile ?from - luogo ?to - luogo)
+    (bloccato ?l - luogo)
+    (usa ?o - oggetto ?l - luogo)
   )
 
   (:action muovi
@@ -32,10 +31,10 @@
     :effect (not (bloccato ?l))
   )
 
-  (:action apre-cancello
-    :parameters (?p - personaggio ?c - luogo)
-    :precondition (and (in ?p ?c) (collezionato ?p "chiave"))
-    :effect (not (bloccato ?c))
+  (:action usa-amm
+    :parameters (?p - personaggio ?f - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (collezionato ?p ?f))
+    :effect (not (bloccato ?l))
   )
 )
 

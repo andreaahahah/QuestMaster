@@ -79,6 +79,7 @@ def json_generator(
     lore: str,
     lore_path: Path
 ) -> dict:
+    print("GENERAZIONE JSON")
     params = estrai_parametri_da_lore_path(lore_path)
     domain = domain_file_corretto.read_text()
     problem = problem_file_corretto.read_text()
@@ -101,5 +102,6 @@ def json_generator(
 
         return grafo
     except Exception as e:
+        print(raw_output)
         print("Errore nella conversione in JSON:", e)
         return {}

@@ -1,6 +1,3 @@
-e file PDDL generati a partire dalla descrizione narrativa:
-
-[DOMAIN]
 (define (domain arlen-quest)
   (:requirements :strips :typing)
 
@@ -9,11 +6,11 @@ e file PDDL generati a partire dalla descrizione narrativa:
   )
 
   (:predicates
-    (in ?p - personaggio ?l - luogo) ;; Il personaggio si trova in un certo luogo
-    (collezionato ?p - personaggio ?o - oggetto) ;; Il personaggio ha raccolto un oggetto
-    (accessibile ?from - luogo ?to - luogo) ;; È possibile spostarsi da un luogo a un altro
-    (bloccato ?l - luogo) ;; Il luogo ha un ostacolo che impedisce l'accesso
-    (usa ?o - oggetto ?l - luogo) ;; Un oggetto può essere usato per superare un luogo
+    (in ?p - personaggio ?l - luogo)
+    (collezionato ?p - personaggio ?o - oggetto)
+    (accessibile ?from - luogo ?to - luogo)
+    (bloccato ?l - luogo)
+    (usa ?o - oggetto ?l - luogo)
   )
 
   (:action muovi
@@ -34,40 +31,15 @@ e file PDDL generati a partire dalla descrizione narrativa:
     :effect (not (bloccato ?l))
   )
 
-  (:action apre-cancello
-    :parameters (?p - personaggio ?c - luogo)
-    :precondition (and (in ?p ?c) (collezionato ?p "chiave"))
-    :effect (not (bloccato ?c))
+  (:action sconfiggi
+    :parameters (?p - personaggio ?f - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (collezionato ?p ?f))
+    :effect (not (bloccato ?l))
+  )
+
+  (:action risolve
+    :parameters (?p - personaggio ?r - oggetto ?l - luogo)
+    :precondition (and (in ?p ?l) (collezionato ?p ?r))
+    :effect (not (bloccato ?l))
   )
 )
-
-[PROBLEM]
-(define (problem arlen-problema)
-  (:domain arlen-quest)
-
-  (:objects
-    arlen - personaggio
-    liora foresta tempio - luogo
-    machete corda amuleto-del-sole chiave - oggetto
-  )
-
-  (:init
-    (in arlen liora)
-    (accessibile liora foresta)
-    (accessibile foresta tempio)
-    (bloccato foresta)
-    (bloccato tempio)
-    (usa machete foresta)
-    (usa corda tempio)
-    (not (collezionato arlen chiave))
-  )
-
-  (:goal
-    (and
-      (in arlen tempio)
-      (collezionato arlen amuleto-del-sole)
-    )
-  )
-)
-
-Nota: Ho aggiunto un'azione "apre-cancello" per permettere a Arlen di superare il cancello magico con la chiave speciale
