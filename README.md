@@ -1,11 +1,11 @@
-#Titolo del Progetto
+# Titolo del Progetto
 
 **Quest Master**:
 *Sistema a due fasi disegnato in maniera specifica per aiutare gli autori creativi a generare delle esperienze narrative in maniera 
 interattiva attraverso tecniche di Planning(PDDL) e AI Generative(LLM)*,sviluppato da due studenti del CdL.Di Laurea Magistrale in Ing.Informatica Dell'Università della Calabria;
 
 
-##Indice
+## Indice
 -[Installazione](#installazione)
 -[Utilizzo](#utilizzo)
 -[Tecnologie](#tecnologie)
@@ -13,14 +13,14 @@ interattiva attraverso tecniche di Planning(PDDL) e AI Generative(LLM)*,sviluppa
 -[Licenza](#Licenza)
 
 
-##Installazione
+## Installazione
 -**Prerequisiti:sistema operativo compatibile (Linux, macOS o Windows). Per usare LLaMA 3 tramite Ollama, è richiesto un sistema con supporto per virtualizzazione e almeno 8–16GB di RAM**
 
 
 
-##Utilizzo
+## Utilizzo
 
-##Tecnologie
+## Tecnologie
 
 -**Python 3**
 -**Pddl**
@@ -29,7 +29,7 @@ interattiva attraverso tecniche di Planning(PDDL) e AI Generative(LLM)*,sviluppa
 
 
 
-##Autori
+## Autori
 
 -[Andrea Farfaglia](https://github.com/andreaahahah)
 -[Lorenzo Manna](https://github.com/lmann97)
